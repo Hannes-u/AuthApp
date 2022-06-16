@@ -12,9 +12,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "customer")
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long iden;
     private String username;
     private String password;
     @ManyToMany(fetch = FetchType.EAGER)

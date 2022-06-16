@@ -35,8 +35,8 @@ public class UserController {
         return userService.saveRole(role);
     }
 
-    @GetMapping("")
-    public User getUserByUsername(@RequestParam String username) {
+    @GetMapping("/{username}")
+    public User getUserByUsername(@PathVariable String username) {
         return userService.findByUsername(username);
     }
 
