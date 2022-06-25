@@ -6,7 +6,9 @@ import com.example.authapp.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,23 +27,21 @@ public class UserController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public ResponseEntity<User> saveUser(@RequestBody User user) {
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
+        return ResponseEntity.created(uri).body(userService.saveUser(user));
     }
 
     @PostMapping("/saveRole")
     @ResponseStatus(HttpStatus.CREATED)
-    public Role saveRole(@RequestBody Role role) {
-        return userService.saveRole(role);
+    public ResponseEntity<Role> saveRole(@RequestBody Role role) {
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
+        return ResponseEntity.created(uri).body(userService.saveRole(role));
     }
+
 
     @GetMapping("/{username}")
     public User getUserByUsername(@PathVariable String username) {
         return userService.findByUsername(username);
-    }
-
-    @PutMapping("/addRole")
-    public void addRoleToUser(@RequestParam String username, @RequestParam String role){
-        userService.addRoleToUser(username,role);
     }
 }
