@@ -1,26 +1,39 @@
 package com.example.authapp.models;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "roles")
-@Getter
-@Setter
-@EqualsAndHashCode
-@NoArgsConstructor
 public class Role {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  private String name;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private ERole name;
 
-  public Role(String name) {
+  public Role() {
+
+  }
+
+  public Role(ERole name) {
+    this.name = name;
+  }
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public ERole getName() {
+    return name;
+  }
+
+  public void setName(ERole name) {
     this.name = name;
   }
 }
