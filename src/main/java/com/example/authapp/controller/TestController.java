@@ -1,4 +1,4 @@
-package com.example.authapp.controllers;
+package com.example.authapp.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
