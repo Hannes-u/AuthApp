@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -30,9 +31,12 @@ public class UserAndRoleService {
         if (userRepo.findByUsername(user.getUsername()).isPresent()){
             throw new AlreadyExistsException("User with Username "+user.getUsername()+" already exists.");
         }
+        List<Role> rolesFromDatabase = new ArrayList<>();
         for (Role role: user.getRoles()){
-            roleRepo.findByName(role.getName()).orElseThrow(() -> new NoSuchElementException("Role "+role.getName()+" does not exist."));
+            Role roleFromDatabase = roleRepo.findByName(role.getName()).orElseThrow(() -> new NoSuchElementException("Role "+role.getName()+" does not exist."));
+            rolesFromDatabase.add(roleFromDatabase);
         }
+        user.setRoles(rolesFromDatabase);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
     }

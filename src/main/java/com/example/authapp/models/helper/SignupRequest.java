@@ -1,7 +1,6 @@
-package com.example.authapp.payload.request;
+package com.example.authapp.models.helper;
 
 import java.util.List;
-import java.util.Set;
 
 public class SignupRequest {
 
@@ -10,7 +9,7 @@ public class SignupRequest {
 
   private String email;
 
-  private List<String> role;
+  private List<String> roles;
 
   private String password;
 
@@ -38,11 +37,11 @@ public class SignupRequest {
     this.password = password;
   }
 
-  public List<String> getRole() {
-    return this.role;
+  public List<String> getRoles() {
+    return this.roles;
   }
 
-  public void setRole(List<String> role) {
-    this.role = role;
+  public void setRoles(List<String> role) {
+    this.roles = role;
   }
 }

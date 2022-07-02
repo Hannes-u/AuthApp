@@ -4,9 +4,9 @@ import com.example.authapp.controller.service.UserAndRoleService;
 import com.example.authapp.exception.AlreadyExistsException;
 import com.example.authapp.models.Role;
 import com.example.authapp.models.User;
-import com.example.authapp.payload.request.LoginRequest;
-import com.example.authapp.payload.request.SignupRequest;
-import com.example.authapp.payload.response.JwtResponse;
+import com.example.authapp.models.helper.JwtResponse;
+import com.example.authapp.models.helper.LoginRequest;
+import com.example.authapp.models.helper.SignupRequest;
 import com.example.authapp.security.jwt.JwtUtils;
 import com.example.authapp.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
   @Autowired
   AuthenticationManager authenticationManager;
@@ -35,7 +35,7 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
-  @PostMapping("/signin")
+  @PostMapping("/login")
   public ResponseEntity<?> authenticateUser( @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication = authenticationManager.authenticate(
@@ -50,19 +50,14 @@ public class AuthController {
             .collect(Collectors.toList());
 
 
-    return ResponseEntity.ok(new JwtResponse(jwt,
-            userDetails.getId(),
-            userDetails.getUsername(),
-            userDetails.getEmail(),
-            roles));
+    return ResponseEntity.ok(new JwtResponse(jwt,userDetails.getUsername(),roles));
   }
 
   @PostMapping("/signup")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
     try {
       List<Role> roles = new ArrayList<>();
-      signupRequest.getRole().forEach(role -> roles.add(new Role(role)));
+      signupRequest.getRoles().forEach(role -> roles.add(new Role(role)));
       User user = new User(signupRequest.getUsername(),signupRequest.getEmail(),signupRequest.getPassword(),roles);
       User savedUser = userAndRoleService.saveUser(user);
       return ResponseEntity.ok(savedUser);

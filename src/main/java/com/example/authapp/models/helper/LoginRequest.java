@@ -1,4 +1,4 @@
-package com.example.authapp.payload.request;
+package com.example.authapp.models.helper;
 
 
 public class LoginRequest {
