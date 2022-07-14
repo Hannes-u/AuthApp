@@ -1,7 +1,5 @@
 package com.example.authapp.security;
 
-import com.example.authapp.security.jwt.AuthEntryPointJwt;
-import com.example.authapp.security.jwt.AuthTokenFilter;
 import com.example.authapp.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,14 +21,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   UserDetailsServiceImpl userDetailsService;
 
-  @Autowired
-  private AuthEntryPointJwt unauthorizedHandler;
-
-  @Bean
-  public AuthTokenFilter authenticationJwtTokenFilter() {
-    return new AuthTokenFilter();
-  }
-
   @Override
   public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
     authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -50,14 +40,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable()
-            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeRequests().antMatchers("/auth/login").permitAll()
-            .antMatchers("/auth/signup").hasAuthority("Role_Admin")
+            .authorizeRequests().antMatchers("/auth/signup").permitAll()
             .antMatchers("/user/all").hasAuthority("Role_Admin")
             .antMatchers("/user/getMyInformation").hasAnyAuthority("Role_Admin","Role_User")
-            .anyRequest().authenticated();
-
-    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+            .anyRequest().authenticated().and()
+            .httpBasic();
   }
 }

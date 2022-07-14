@@ -31,6 +31,9 @@ public class UserAndRoleService {
         if (userRepo.findByUsername(user.getUsername()).isPresent()){
             throw new AlreadyExistsException("User with Username "+user.getUsername()+" already exists.");
         }
+        if (userRepo.existsByEmail(user.getEmail())){
+            throw new AlreadyExistsException("User with Email "+user.getEmail()+" already exists.");
+        }
         List<Role> rolesFromDatabase = new ArrayList<>();
         for (Role role: user.getRoles()){
             Role roleFromDatabase = roleRepo.findByName(role.getName()).orElseThrow(() -> new NoSuchElementException("Role "+role.getName()+" does not exist."));

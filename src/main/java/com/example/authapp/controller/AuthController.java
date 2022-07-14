@@ -4,19 +4,12 @@ import com.example.authapp.controller.service.UserAndRoleService;
 import com.example.authapp.exception.AlreadyExistsException;
 import com.example.authapp.models.Role;
 import com.example.authapp.models.User;
-import com.example.authapp.models.helper.JwtResponse;
-import com.example.authapp.models.helper.LoginRequest;
+
 import com.example.authapp.models.helper.SignupRequest;
-import com.example.authapp.security.jwt.JwtUtils;
-import com.example.authapp.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -32,26 +25,6 @@ public class AuthController {
   AuthenticationManager authenticationManager;
   @Autowired
   UserAndRoleService userAndRoleService;
-  @Autowired
-  JwtUtils jwtUtils;
-
-  @PostMapping("/login")
-  public ResponseEntity<?> authenticateUser( @RequestBody LoginRequest loginRequest) {
-
-    Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generateJwtToken(authentication);
-
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    List<String> roles = userDetails.getAuthorities().stream()
-            .map(item -> item.getAuthority())
-            .collect(Collectors.toList());
-
-
-    return ResponseEntity.ok(new JwtResponse(jwt,userDetails.getUsername(),roles));
-  }
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
