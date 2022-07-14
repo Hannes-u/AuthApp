@@ -6,7 +6,6 @@ import com.example.authapp.models.User;
 import com.example.authapp.repository.RoleRepository;
 import com.example.authapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +17,11 @@ import java.util.NoSuchElementException;
 public class UserAndRoleService {
     private final UserRepository userRepo;
     private final RoleRepository roleRepo;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserAndRoleService(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder) {
+    public UserAndRoleService(UserRepository userRepo, RoleRepository roleRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public User saveUser(User user){
@@ -40,7 +37,6 @@ public class UserAndRoleService {
             rolesFromDatabase.add(roleFromDatabase);
         }
         user.setRoles(rolesFromDatabase);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
     }
 

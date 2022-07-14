@@ -1,7 +1,5 @@
 package com.example.authapp.models.helper;
 
-import com.example.authapp.models.Role;
-
 import java.util.List;
 
 public class JwtResponse {
