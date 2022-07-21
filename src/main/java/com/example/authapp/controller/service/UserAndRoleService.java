@@ -1,11 +1,15 @@
 package com.example.authapp.controller.service;
 
 import com.example.authapp.exception.AlreadyExistsException;
+import com.example.authapp.exception.PasswordInvalidException;
 import com.example.authapp.models.Role;
 import com.example.authapp.models.User;
 import com.example.authapp.repository.RoleRepository;
 import com.example.authapp.repository.UserRepository;
+import org.passay.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ public class UserAndRoleService {
     private final RoleRepository roleRepo;
     private final PasswordEncoder passwordEncoder;
 
+
+
     @Autowired
     public UserAndRoleService(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
@@ -31,6 +37,7 @@ public class UserAndRoleService {
         if (userRepo.findByUsername(user.getUsername()).isPresent()){
             throw new AlreadyExistsException("User with Username "+user.getUsername()+" already exists.");
         }
+        isPasswordValid(user.getPassword());
         List<Role> rolesFromDatabase = new ArrayList<>();
         for (Role role: user.getRoles()){
             Role roleFromDatabase = roleRepo.findByName(role.getName()).orElseThrow(() -> new NoSuchElementException("Role "+role.getName()+" does not exist."));
@@ -70,5 +77,30 @@ public class UserAndRoleService {
 
     public List<Role> findAllRoles(){
         return roleRepo.findAll();
+    }
+
+    public void changePassword(String username, String newPassword){
+        isPasswordValid(newPassword);
+        User user = findByUsername(username);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+    }
+
+    private void isPasswordValid(String password){
+        PasswordValidator passwordValidator =
+                new PasswordValidator(
+                        new LengthRule(14,64),
+                        new CharacterRule(EnglishCharacterData.UpperCase, 1),
+                        new CharacterRule(EnglishCharacterData.Digit, 1),
+                        new IllegalSequenceRule(EnglishSequenceData.Alphabetical, 4, true),
+                        new IllegalSequenceRule(EnglishSequenceData.Numerical, 4, true),
+                        new IllegalSequenceRule(EnglishSequenceData.USQwerty, 4, true)
+                );
+        RuleResult result = passwordValidator.validate(new PasswordData(password));
+        if (!result.isValid()) {
+            List<String> messages = passwordValidator.getMessages(result);
+            String messageTemplate = String.join("\n", messages);
+            throw new PasswordInvalidException(messageTemplate);
+        }
     }
 }

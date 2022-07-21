@@ -2,8 +2,10 @@ package com.example.authapp.controller;
 
 import com.example.authapp.controller.service.UserAndRoleService;
 import com.example.authapp.exception.AlreadyExistsException;
+import com.example.authapp.exception.PasswordInvalidException;
 import com.example.authapp.models.Role;
 import com.example.authapp.models.User;
+import com.example.authapp.models.helper.ChangePasswordRequest;
 import com.example.authapp.models.helper.JwtResponse;
 import com.example.authapp.models.helper.LoginRequest;
 import com.example.authapp.models.helper.SignupRequest;
@@ -17,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -65,6 +68,9 @@ public class AuthController {
       return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(alreadyExistsException.getMessage());
     }catch (NoSuchElementException noSuchElementException){
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(noSuchElementException.getMessage());
+    }catch (PasswordInvalidException passwordInvalidException){
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(passwordInvalidException.getMessage());
     }
   }
+
 }

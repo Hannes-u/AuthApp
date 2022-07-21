@@ -26,7 +26,7 @@ public class AuthAppApplication {
 			}catch (NoSuchElementException e){
 				userAndRoleService.saveRole(new Role("Role_User"));
 				userAndRoleService.saveRole(new Role("Role_Admin"));
-				userAndRoleService.saveUser(new User("admin","admin@mail.de","1234",new ArrayList<>()));
+				userAndRoleService.saveUser(new User("admin","admin@mail.de","Admin@1999@Password",new ArrayList<>()));
 				userAndRoleService.addRoleToUser("Role_Admin","admin");
 			}
 		};
