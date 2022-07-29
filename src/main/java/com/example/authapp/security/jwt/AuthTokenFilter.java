@@ -13,9 +13,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
   @Autowired
@@ -31,7 +36,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
     try {
       String jwt = parseJwt(request);
-      if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+      String fingerprint = getFingerprint(request);
+
+      if (jwt != null && fingerprint != null && jwtUtils.validateJwtToken(jwt,fingerprint)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -59,5 +66,18 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     return null;
+  }
+
+  private String getFingerprint(HttpServletRequest request){
+    String userFingerprint = null;
+    if (request.getCookies() != null && request.getCookies().length > 0) {
+      List<Cookie> cookies = Arrays.stream(request.getCookies()).collect(Collectors.toList());
+      Optional<Cookie> cookie = cookies.stream().filter(c -> "__Secure-Fgp"
+              .equals(c.getName())).findFirst();
+      if (cookie.isPresent()) {
+        userFingerprint = cookie.get().getValue();
+      }
+    }
+    return userFingerprint;
   }
 }

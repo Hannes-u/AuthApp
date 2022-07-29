@@ -22,9 +22,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -39,13 +45,32 @@ public class AuthController {
   JwtUtils jwtUtils;
 
   @PostMapping("/login")
-  public ResponseEntity<?> authenticateUser( @RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> authenticateUser(HttpServletResponse response, @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generateJwtToken(authentication);
+
+    //Generate a random string that will constitute the fingerprint for this user
+    byte[] randomFgp = new byte[50];
+    SecureRandom secureRandom = new SecureRandom();
+    secureRandom.nextBytes(randomFgp);
+    String userFingerprint = DatatypeConverter.printHexBinary(randomFgp);
+    Cookie cookie = new Cookie("__Secure-Fgp",userFingerprint);
+    cookie.setSecure(true);
+    cookie.setMaxAge(jwtUtils.getJwtExpirations()/1000);
+    cookie.setHttpOnly(true);
+
+    response.addCookie(cookie);
+
+    String jwt = "";
+    try {
+      jwt = jwtUtils.generateJwtToken(authentication,userFingerprint);
+    }catch (Exception exception){
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong!");
+    }
+
 
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     List<String> roles = userDetails.getAuthorities().stream()

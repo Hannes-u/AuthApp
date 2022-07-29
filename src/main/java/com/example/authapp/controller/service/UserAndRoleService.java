@@ -63,10 +63,6 @@ public class UserAndRoleService {
         return userRepo.findByUsername(username).orElseThrow(() -> new NoSuchElementException("There is no user in database with username: "+username+"!"));
     }
 
-    public User findUserById(Long id){
-        return userRepo.findById(id).orElseThrow(() -> new NoSuchElementException("There is no user in database with id: "+id+"!"));
-    }
-
     public List<User> getAllUsers(){
         return userRepo.findAll();
     }
@@ -75,9 +71,6 @@ public class UserAndRoleService {
         return roleRepo.save(role);
     }
 
-    public List<Role> findAllRoles(){
-        return roleRepo.findAll();
-    }
 
     public void changePassword(String username, String newPassword){
         isPasswordValid(newPassword);
@@ -89,12 +82,12 @@ public class UserAndRoleService {
     private void isPasswordValid(String password){
         PasswordValidator passwordValidator =
                 new PasswordValidator(
-                        new LengthRule(14,64),
+                        new LengthRule(8,128),
                         new CharacterRule(EnglishCharacterData.UpperCase, 1),
                         new CharacterRule(EnglishCharacterData.Digit, 1),
                         new IllegalSequenceRule(EnglishSequenceData.Alphabetical, 4, true),
                         new IllegalSequenceRule(EnglishSequenceData.Numerical, 4, true),
-                        new IllegalSequenceRule(EnglishSequenceData.USQwerty, 4, true)
+                        new IllegalSequenceRule(GermanSequenceData.Alphabetical, 4, true)
                 );
         RuleResult result = passwordValidator.validate(new PasswordData(password));
         if (!result.isValid()) {
