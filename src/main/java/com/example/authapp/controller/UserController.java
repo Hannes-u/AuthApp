@@ -12,10 +12,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -61,7 +62,7 @@ public class UserController {
       userAndRoleService.changePassword(username,changePasswordRequest.getNewPassword());
       return ResponseEntity.ok("Password successfully changed!");
     }catch (PasswordInvalidException passwordInvalidException){
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(passwordInvalidException.getMessage());
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,passwordInvalidException.getMessage());
     }
 
   }

@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -58,7 +59,8 @@ public class AuthController {
     secureRandom.nextBytes(randomFgp);
     String userFingerprint = DatatypeConverter.printHexBinary(randomFgp);
     Cookie cookie = new Cookie("__Secure-Fgp",userFingerprint);
-    cookie.setSecure(true);
+    cookie.setDomain("localhost");
+    cookie.setPath("/");
     cookie.setMaxAge(jwtUtils.getJwtExpirations()/1000);
     cookie.setHttpOnly(true);
 
@@ -84,17 +86,15 @@ public class AuthController {
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
     try {
-      List<Role> roles = new ArrayList<>();
-      signupRequest.getRoles().forEach(role -> roles.add(new Role(role)));
-      User user = new User(signupRequest.getUsername(),signupRequest.getEmail(),signupRequest.getPassword(),roles);
+      User user = new User(signupRequest.getUsername(),signupRequest.getEmail(),signupRequest.getPassword(),new ArrayList<>());
       User savedUser = userAndRoleService.saveUser(user);
       return ResponseEntity.ok(savedUser);
     }catch (AlreadyExistsException alreadyExistsException){
-      return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(alreadyExistsException.getMessage());
+      throw new ResponseStatusException(HttpStatus.CONFLICT,alreadyExistsException.getMessage());
     }catch (NoSuchElementException noSuchElementException){
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(noSuchElementException.getMessage());
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND,noSuchElementException.getMessage());
     }catch (PasswordInvalidException passwordInvalidException){
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(passwordInvalidException.getMessage());
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,passwordInvalidException.getMessage());
     }
   }
 

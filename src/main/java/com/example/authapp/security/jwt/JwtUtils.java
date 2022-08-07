@@ -51,12 +51,9 @@ public class JwtUtils {
     return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody().getSubject();
   }
 
-  public boolean validateJwtToken(String authToken, String userFingerprint) {
+  public boolean validateJwtToken(String authToken) {
     try {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      byte[] userFingerprintDigest = digest.digest(userFingerprint.getBytes("utf-8"));
-      String userFingerprintHash = DatatypeConverter.printHexBinary(userFingerprintDigest);
-      Jwts.parserBuilder().setSigningKey(secret).require("userFingerprint",userFingerprintHash)
+      Jwts.parserBuilder().setSigningKey(secret)
               .build().parseClaimsJws(authToken);
       return true;
     } catch (SignatureException e) {
@@ -69,8 +66,6 @@ public class JwtUtils {
       logger.error("JWT token is unsupported: {}", e.getMessage());
     } catch (IllegalArgumentException e) {
       logger.error("JWT claims string is empty: {}", e.getMessage());
-    } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-     logger.error("Something went wrong while hashing fingerprint!");
     }
 
     return false;

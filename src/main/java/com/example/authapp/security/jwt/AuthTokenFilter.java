@@ -38,7 +38,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String jwt = parseJwt(request);
       String fingerprint = getFingerprint(request);
 
-      if (jwt != null && fingerprint != null && jwtUtils.validateJwtToken(jwt,fingerprint)) {
+      if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);

@@ -39,10 +39,8 @@ public class UserAndRoleService {
         }
         isPasswordValid(user.getPassword());
         List<Role> rolesFromDatabase = new ArrayList<>();
-        for (Role role: user.getRoles()){
-            Role roleFromDatabase = roleRepo.findByName(role.getName()).orElseThrow(() -> new NoSuchElementException("Role "+role.getName()+" does not exist."));
-            rolesFromDatabase.add(roleFromDatabase);
-        }
+        Role roleFromDatabase = findRoleByName("Role_User");
+        rolesFromDatabase.add(roleFromDatabase);
         user.setRoles(rolesFromDatabase);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
@@ -82,9 +80,10 @@ public class UserAndRoleService {
     private void isPasswordValid(String password){
         PasswordValidator passwordValidator =
                 new PasswordValidator(
-                        new LengthRule(8,128),
+                        new LengthRule(10,125),
                         new CharacterRule(EnglishCharacterData.UpperCase, 1),
                         new CharacterRule(EnglishCharacterData.Digit, 1),
+                        new CharacterRule(EnglishCharacterData.Special,1),
                         new IllegalSequenceRule(EnglishSequenceData.Alphabetical, 4, true),
                         new IllegalSequenceRule(EnglishSequenceData.Numerical, 4, true),
                         new IllegalSequenceRule(GermanSequenceData.Alphabetical, 4, true)
