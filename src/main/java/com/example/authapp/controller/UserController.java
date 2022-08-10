@@ -5,12 +5,11 @@ import com.example.authapp.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -25,18 +24,9 @@ public class UserController {
     return userAndRoleService.getAllUsers();
   }
 
-  @GetMapping("/getMyInformation")
-  public User getInformationOfUser() {
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    String username;
-    if (principal instanceof UserDetails) {
-      username = ((UserDetails) principal).getUsername();
-    } else {
-      username = principal.toString();
-    }
-
-    return userAndRoleService.findByUsername(username);
+  @PostMapping("/getAndMaybeCreateMyInformation")
+  public Map<String, Object> getUserDetails(JwtAuthenticationToken authentication) {
+    return authentication.getTokenAttributes();
   }
 
 }
