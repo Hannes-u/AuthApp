@@ -2,6 +2,7 @@ package com.example.authapp.controller;
 
 import com.example.authapp.controller.service.UserAndRoleService;
 import com.example.authapp.exception.AlreadyExistsException;
+import com.example.authapp.exception.PasswordInvalidException;
 import com.example.authapp.models.Role;
 import com.example.authapp.models.User;
 
@@ -30,7 +31,6 @@ public class AuthController {
   public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
     try {
       List<Role> roles = new ArrayList<>();
-      signupRequest.getRoles().forEach(role -> roles.add(new Role(role)));
       User user = new User(signupRequest.getUsername(),signupRequest.getEmail(),signupRequest.getPassword(),roles);
       User savedUser = userAndRoleService.saveUser(user);
       return ResponseEntity.ok(savedUser);
@@ -38,6 +38,8 @@ public class AuthController {
       return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(alreadyExistsException.getMessage());
     }catch (NoSuchElementException noSuchElementException){
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(noSuchElementException.getMessage());
+    }catch (PasswordInvalidException passwordInvalidException){
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(passwordInvalidException.getMessage());
     }
   }
 }
