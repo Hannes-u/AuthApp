@@ -19,17 +19,15 @@ public class User {
 
   private String email;
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  private List<Role> roles = new ArrayList<>();
 
   public User() {
   }
 
-  public User(String username, String email, List<Role> roles) {
+  public User(String username, String email) {
     this.username = username;
     this.email = email;
-    this.roles = roles;
   }
+
 
   public Long getId() {
     return id;
@@ -55,11 +53,4 @@ public class User {
     this.email = email;
   }
 
-  public List<Role> getRoles() {
-    return roles;
-  }
-
-  public void setRoles(List<Role> roles) {
-    this.roles = roles;
-  }
 }
