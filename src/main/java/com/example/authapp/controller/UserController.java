@@ -1,9 +1,10 @@
 package com.example.authapp.controller;
 
-import com.example.authapp.controller.service.UserAndRoleService;
+import com.example.authapp.controller.service.UserService;
 import com.example.authapp.exception.PasswordInvalidException;
 import com.example.authapp.models.User;
 import com.example.authapp.models.helper.ChangePasswordRequest;
+import com.example.authapp.models.helper.ChangePasswordSuccessfulResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
   @Autowired
-  UserAndRoleService userAndRoleService;
+  UserService userService;
   @Autowired
   AuthenticationManager authenticationManager;
 
 
   @GetMapping("/all")
   public List<User> allUsers() {
-    return userAndRoleService.getAllUsers();
+    return userService.getAllUsers();
   }
 
   @GetMapping("/getMyInformation")
@@ -42,7 +43,7 @@ public class UserController {
       username = principal.toString();
     }
 
-    return userAndRoleService.findByUsername(username);
+    return userService.findByUsername(username);
   }
 
   @PutMapping("/changePassword")
@@ -59,10 +60,10 @@ public class UserController {
             new UsernamePasswordAuthenticationToken(username, changePasswordRequest.getOldPassword()));
 
     try {
-      userAndRoleService.changePassword(username,changePasswordRequest.getNewPassword());
-      return ResponseEntity.ok("Password successfully changed!");
+      userService.changePassword(username,changePasswordRequest.getNewPassword());
+      return ResponseEntity.ok(new ChangePasswordSuccessfulResponse("Password successfully changed!"));
     }catch (PasswordInvalidException passwordInvalidException){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,passwordInvalidException.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(passwordInvalidException.getMessage());
     }
 
   }
