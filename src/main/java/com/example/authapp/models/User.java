@@ -26,17 +26,13 @@ public class User {
   @JsonIgnore
   private String password;
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  private List<Role> roles = new ArrayList<>();
-
   public User() {
   }
 
-  public User(String username, String email, String password, List<Role> roles) {
+  public User(String username, String email, String password) {
     this.username = username;
     this.email = email;
     this.password = password;
-    this.roles = roles;
   }
 
   public Long getId() {
@@ -71,11 +67,4 @@ public class User {
     this.password = password;
   }
 
-  public List<Role> getRoles() {
-    return roles;
-  }
-
-  public void setRoles(List<Role> roles) {
-    this.roles = roles;
-  }
 }

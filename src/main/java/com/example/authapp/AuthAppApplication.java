@@ -1,7 +1,6 @@
 package com.example.authapp;
 
-import com.example.authapp.controller.service.UserAndRoleService;
-import com.example.authapp.models.Role;
+import com.example.authapp.controller.service.UserService;
 import com.example.authapp.models.User;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,15 +19,12 @@ public class AuthAppApplication {
 
 	//Anlegen von einem Admin User beim erstmaligen Start der Applikation.
 	@Bean
-	CommandLineRunner runner(UserAndRoleService userAndRoleService) {
+	CommandLineRunner runner(UserService userService) {
 		return args -> {
 			try {
-				userAndRoleService.findByUsername("admin");
+				userService.findByUsername("admin");
 			}catch (NoSuchElementException e){
-				userAndRoleService.saveRole(new Role("Role_User"));
-				userAndRoleService.saveRole(new Role("Role_Admin"));
-				userAndRoleService.saveUser(new User("admin","admin@mail.de","Ad@1999@Password",new ArrayList<>()));
-				userAndRoleService.addRoleToUser("Role_Admin","admin");
+				userService.saveUser(new User("admin","admin@mail.de","Ad@1999@Password"));
 			}
 		};
 	}

@@ -1,9 +1,8 @@
 package com.example.authapp.controller;
 
-import com.example.authapp.controller.service.UserAndRoleService;
+import com.example.authapp.controller.service.UserService;
 import com.example.authapp.exception.AlreadyExistsException;
 import com.example.authapp.exception.PasswordInvalidException;
-import com.example.authapp.models.Role;
 import com.example.authapp.models.User;
 
 import com.example.authapp.models.helper.SignupRequest;
@@ -13,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -25,14 +21,13 @@ public class AuthController {
   @Autowired
   AuthenticationManager authenticationManager;
   @Autowired
-  UserAndRoleService userAndRoleService;
+  UserService userService;
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
     try {
-      List<Role> roles = new ArrayList<>();
-      User user = new User(signupRequest.getUsername(),signupRequest.getEmail(),signupRequest.getPassword(),roles);
-      User savedUser = userAndRoleService.saveUser(user);
+      User user = new User(signupRequest.getUsername(),signupRequest.getEmail(),signupRequest.getPassword());
+      User savedUser = userService.saveUser(user);
       return ResponseEntity.ok(savedUser);
     }catch (AlreadyExistsException alreadyExistsException){
       return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(alreadyExistsException.getMessage());
