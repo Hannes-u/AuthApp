@@ -4,6 +4,7 @@ import com.example.authapp.controller.service.UserService;
 import com.example.authapp.exception.PasswordInvalidException;
 import com.example.authapp.models.User;
 import com.example.authapp.models.helper.ChangePasswordRequest;
+import com.example.authapp.models.helper.ChangePasswordSuccessfulResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class UserController {
 
     try {
       userService.changePassword(username,changePasswordRequest.getPassword());
-      return ResponseEntity.ok("Password successfully changed!");
+      return ResponseEntity.ok(new ChangePasswordSuccessfulResponse("Password changed successful!"));
     }catch (PasswordInvalidException passwordInvalidException){
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(passwordInvalidException.getMessage());
     }
