@@ -25,7 +25,6 @@ public class UserController {
   @GetMapping("/getAndMaybeCreateMyInformation")
   public User getUserDetails(JwtAuthenticationToken authentication) {
     String username = authentication.getTokenAttributes().get("sub").toString();
-
     try{
       return userService.findByUsername(username);
     }catch (NoSuchElementException noSuchElementException){
