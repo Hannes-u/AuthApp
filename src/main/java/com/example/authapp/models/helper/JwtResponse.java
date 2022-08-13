@@ -5,12 +5,10 @@ import java.util.List;
 public class JwtResponse {
     private String access_token;
     private String username;
-    private List<String> roles;
 
-    public JwtResponse(String access_token, String username, List<String> roles) {
+    public JwtResponse(String access_token, String username) {
         this.access_token = access_token;
         this.username = username;
-        this.roles = roles;
     }
 
     public String getAccess_token() {
@@ -29,11 +27,4 @@ public class JwtResponse {
         this.username = username;
     }
 
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
 }

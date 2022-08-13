@@ -31,16 +31,15 @@ public class JwtUtils {
     return jwtExpirationMs;
   }
 
-  public String generateJwtToken(Authentication authentication,String userFingerprint) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+  public String generateJwtToken(String username,String userFingerprint) throws UnsupportedEncodingException, NoSuchAlgorithmException {
 
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] userFingerprintDigest = digest.digest(userFingerprint.getBytes("utf-8"));
       String userFingerprintHash = DatatypeConverter.printHexBinary(userFingerprintDigest);
 
-    UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
     return Jwts.builder()
             .claim("userFingerprint",userFingerprintHash)
-            .setSubject((userPrincipal.getUsername()))
+            .setSubject((username))
             .setIssuedAt(new Date())
             .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
             .signWith(secret)

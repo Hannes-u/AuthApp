@@ -56,24 +56,16 @@ public class AuthController {
     cookie.setPath("/");
     cookie.setMaxAge(jwtUtils.getJwtExpirations()/1000);
     cookie.setHttpOnly(true);
-
     response.addCookie(cookie);
 
     String jwt = "";
     try {
-      jwt = jwtUtils.generateJwtToken(authentication,userFingerprint);
+      jwt = jwtUtils.generateJwtToken(loginRequest.getUsername(),userFingerprint);
     }catch (Exception exception){
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong!");
     }
 
-
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    List<String> roles = userDetails.getAuthorities().stream()
-            .map(item -> item.getAuthority())
-            .collect(Collectors.toList());
-
-
-    return ResponseEntity.ok(new JwtResponse(jwt,userDetails.getUsername(),roles));
+    return ResponseEntity.ok(new JwtResponse(jwt,loginRequest.getUsername()));
   }
 
   @PostMapping("/signup")
