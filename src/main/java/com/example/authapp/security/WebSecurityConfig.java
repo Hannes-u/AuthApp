@@ -9,15 +9,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+  //Konfguartion für Okta
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    // @formatter:off
     http
             .cors().and()
             .authorizeRequests().anyRequest().authenticated()
             .and()
             .oauth2ResourceServer().jwt();
-    // @formatter:on
 
     Okta.configureResourceServer401ResponseBody(http);
   }
