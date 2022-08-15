@@ -24,7 +24,9 @@ public class UserController {
 
   @GetMapping("/getAndMaybeCreateMyInformation")
   public User getUserDetails(JwtAuthenticationToken authentication) {
+    //über den bekommenen access token, kann der Name des Nutzers herausgefunden werden.
     String username = authentication.getTokenAttributes().get("sub").toString();
+    //falls der Nutzer noch nicht in der Datenbank abgelgt ist, wird er noch gespeichert.
     try{
       return userService.findByUsername(username);
     }catch (NoSuchElementException noSuchElementException){
