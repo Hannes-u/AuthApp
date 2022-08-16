@@ -41,12 +41,13 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(HttpServletResponse response, @RequestBody LoginRequest loginRequest) {
 
+    //Überprüfung ob Anmeldedaten stimmen.
     Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    //Generate a random string that will constitute the fingerprint for this user
+    //Fingerprint Generierung
     byte[] randomFgp = new byte[50];
     SecureRandom secureRandom = new SecureRandom();
     secureRandom.nextBytes(randomFgp);
@@ -60,6 +61,7 @@ public class AuthController {
 
     String jwt = "";
     try {
+      //JWT Generierung
       jwt = jwtUtils.generateJwtToken(loginRequest.getUsername(),userFingerprint);
     }catch (Exception exception){
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong!");

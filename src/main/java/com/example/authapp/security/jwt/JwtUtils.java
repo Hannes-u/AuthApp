@@ -18,10 +18,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Map;
 
+//Klasse für JWT Generierung und Validierung
 @Component
 public class JwtUtils {
   private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
+  //Generierung von secret
   private final Key secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
   @Value("${authApp.jwtExpirationMs}")
@@ -31,6 +33,7 @@ public class JwtUtils {
     return jwtExpirationMs;
   }
 
+  //Methode um JWT zu generieren
   public String generateJwtToken(String username,String userFingerprint) throws UnsupportedEncodingException, NoSuchAlgorithmException {
 
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -50,6 +53,7 @@ public class JwtUtils {
     return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody().getSubject();
   }
 
+  //Methode um JWT zu validieren
   public boolean validateJwtToken(String authToken) {
     try {
       Jwts.parserBuilder().setSigningKey(secret)

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+//Filter für JWTs
 public class AuthTokenFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtils jwtUtils;
@@ -39,6 +40,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String fingerprint = getFingerprint(request);
 
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+        // Falls der jwt gültig ist wird der SecurityContext gesetzt
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -58,6 +60,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
+  //Methode um den JWT aus dem Header auszulesen
   private String parseJwt(HttpServletRequest request) {
     String headerAuth = request.getHeader("Authorization");
 
@@ -68,6 +71,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     return null;
   }
 
+  //Methode um Fingerprint Cookie zu bekommen
   private String getFingerprint(HttpServletRequest request){
     String userFingerprint = null;
     if (request.getCookies() != null && request.getCookies().length > 0) {
