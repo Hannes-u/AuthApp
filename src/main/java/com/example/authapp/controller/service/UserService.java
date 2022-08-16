@@ -30,7 +30,7 @@ public class UserService {
         if (userRepo.findByUsername(user.getUsername()).isPresent()){
             throw new AlreadyExistsException("User with Username "+user.getUsername()+" already exists.");
         }
-        if (userRepo.findByUsername(user.getEmail()).isPresent()){
+        if (userRepo.findByEmail(user.getEmail()).isPresent()){
             throw new AlreadyExistsException("User with Email "+user.getEmail()+" already exists.");
         }
         isPasswordValid(user.getUsername(),user.getPassword());
