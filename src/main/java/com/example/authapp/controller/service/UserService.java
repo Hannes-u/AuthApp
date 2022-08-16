@@ -18,6 +18,7 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
+    //Methode um neue Nutzer in der Datenbank abzulegen
     public User saveUser(User user){
         if (userRepo.findByUsername(user.getUsername()).isPresent()){
             throw new AlreadyExistsException("User with Username "+user.getUsername()+" already exists.");
@@ -33,9 +34,5 @@ public class UserService {
     }
     public User findByUsername(String username){
         return userRepo.findByUsername(username).orElseThrow(() -> new NoSuchElementException("There is no user in database with username: "+username+"!"));
-    }
-
-    public User findUserById(Long id){
-        return userRepo.findById(id).orElseThrow(() -> new NoSuchElementException("There is no user in database with id: "+id+"!"));
     }
 }
