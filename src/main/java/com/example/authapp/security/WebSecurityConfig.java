@@ -19,6 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   UserDetailsServiceImpl userDetailsService;
 
+  // AuthenticationManagerBuilder wird konfiguriert, indem ein Service mit Verbindung zur datenbank und der verwendete HashingAlogrithmus übergeben wird.
   @Override
   public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
     authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -31,6 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
+  // Passwort Hashing Algorithmus wird festgelegt(sollte durch Argon2id ersetzt werden)
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
@@ -42,6 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests().antMatchers("/auth/signup").permitAll()
             .anyRequest().authenticated().and()
+            //Basic Auth wird festgelegt
             .httpBasic();
   }
 }

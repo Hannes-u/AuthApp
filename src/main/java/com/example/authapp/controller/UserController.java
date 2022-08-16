@@ -30,6 +30,7 @@ public class UserController {
 
   @GetMapping("/getMyInformation")
   public User getInformationOfUser() {
+    //Über den Securitycontext der Aktuellen Anfrage kann der Nutzername herausgefunden
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     String username;
@@ -44,6 +45,7 @@ public class UserController {
 
   @PutMapping("/changePassword")
   public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
+    //Über den Securitycontext der Aktuellen Anfrage kann der Nutzername herausgefunden
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     String username;
