@@ -1,11 +1,30 @@
-version: "3.7"
+version: "2.0"
 services:
-  db:
-    image: postgres:latest
+  auth_app:
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL:
+      SPRING_APPLICATION_JSON: '{
+              "spring.datasource.url"  : "jdbc:mariadb://maria_db:3306/auth_db",
+              "spring.datasource.username" : "Han",
+              "spring.datasource.password" : "Han",
+              "spring.datasource.driver-class-name" : "org.mariadb.jdbc.Driver",
+              "spring.jpa.hibernate.ddl-auto" : "update"
+            }'
+    ports:
+      - 8080:8080
+    depends_on:
+      maria_db:
+        condition: service_healthy
+    links:
+      - maria_db:auth_db
+  maria_db:
+    image: "mariadb:10"
     restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pwd
-      POSTGRES_DB: authdb
-    ports:
-      - 5432:5432
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: Han
+      MYSQL_PASSWORD: Han
+      MYSQL_ROOT_PASSWORD: Han
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
