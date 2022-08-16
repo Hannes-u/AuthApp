@@ -1,3 +1,13 @@
 FROM openjdk:11
-COPY target/AuthApp-0.0.1-SNAPSHOT.jar AuthApp.jar
-ENTRYPOINT ["java","-jar","/AuthApp.jar"]
+
+WORKDIR /app
+
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN apt-get update && apt-get install -y dos2unix
+RUN dos2unix mvnw
+RUN ./mvnw dependency:go-offline
+
+COPY src ./src
+
+CMD ["./mvnw", "spring-boot:run"]
